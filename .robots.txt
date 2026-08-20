@@ -1,0 +1,4 @@
+# CAL robots configuration
+# The standard crawler file is /robots.txt; this hidden copy documents the same policy.
+User-agent: *
+Allow: /
