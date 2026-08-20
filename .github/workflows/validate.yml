@@ -1,0 +1,60 @@
+name: Validate CAL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript syntax
+        run: node --check script.js
+
+      - name: Validate inline JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re, subprocess, pathlib, sys
+          files = [p for p in pathlib.Path('.').glob('*.html')]
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              for i, block in enumerate(re.findall(r'<script(?![^>]*src=)[^>]*>(.*?)</script>', text, re.S), 1):
+                  tmp = pathlib.Path('/tmp') / f'{path.stem}-{i}.js'
+                  tmp.write_text(block, encoding='utf-8')
+                  result = subprocess.run(['node', '--check', str(tmp)], capture_output=True, text=True)
+                  if result.returncode:
+                      print(f'Inline JavaScript error in {path}, block {i}:')
+                      print(result.stderr)
+                      sys.exit(result.returncode)
+          print('Inline JavaScript syntax is valid.')
+          PY
+
+      - name: Validate required pages
+        run: |
+          test -f index.html
+          test -f 404.html
+          test -f thank-you.html
+          test -f privacy.html
+          test -f robots.txt
+          test -f sitemap.xml
+
+      - name: Validate sitemap URLs
+        run: |
+          grep -q 'https://tejas-mk2.github.io/Cal/' sitemap.xml
+          grep -q 'https://tejas-mk2.github.io/Cal/thank-you.html' sitemap.xml
+          grep -q 'Sitemap: https://tejas-mk2.github.io/Cal/sitemap.xml' robots.txt
