@@ -1,16 +1,13 @@
 :root {
   --bg: #090909;
   --panel: rgba(18,18,18,.78);
-  --panel-solid: #121212;
   --display: #0c0c0c;
   --key: #181818;
   --key-hover: #242424;
   --line: rgba(255,255,255,.10);
-  --line-strong: rgba(255,255,255,.18);
   --text: #f5f5f3;
   --muted: #858585;
   --dim: #565656;
-  --accent: #fff;
   --radius: 24px;
   --button-radius: 15px;
   --ease: cubic-bezier(.22,1,.36,1);
@@ -29,7 +26,13 @@ body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-x: none;
 }
+
+button { font: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button, .calculator-shell { -webkit-user-select: none; user-select: none; }
 
 body::before {
   content: "";
@@ -42,29 +45,20 @@ body::before {
   mask-image: linear-gradient(to bottom, rgba(0,0,0,.7), transparent 80%);
 }
 
-button { font: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .ambient { position: fixed; width: 220px; height: 220px; border: 1px solid rgba(255,255,255,.035); border-radius: 50%; pointer-events: none; }
 .ambient-one { top: -120px; right: -80px; }
 .ambient-two { bottom: -150px; left: -100px; width: 300px; height: 300px; }
 
 .page {
   min-height: 100dvh;
+  width: 100%;
   display: grid;
   place-items: center;
-  padding: max(22px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
 
-.calculator-container { width: min(430px, 100%); }
-
-.site-header,
-.bottom-caption,
-.calculator-footer,
-.calculator-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
+.calculator-container { width: min(430px, 100%); min-width: 0; }
+.site-header, .bottom-caption, .calculator-footer, .calculator-topline { display: flex; align-items: center; justify-content: space-between; }
 .site-header { margin: 0 4px 14px; color: var(--muted); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
 .eyebrow { display: flex; align-items: center; gap: 8px; }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px rgba(255,255,255,.8); }
@@ -72,7 +66,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; touch-action: 
 
 .calculator-shell {
   position: relative;
-  padding: clamp(15px, 4vw, 24px);
+  width: 100%;
+  padding: clamp(13px, 4vw, 24px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: linear-gradient(145deg, rgba(30,30,30,.78), rgba(11,11,11,.92));
@@ -80,30 +75,15 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; touch-action: 
   backdrop-filter: blur(20px);
   overflow: hidden;
 }
-
-.calculator-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(115deg, rgba(255,255,255,.055), transparent 22%, transparent 75%, rgba(255,255,255,.025));
-}
-
-.calculator-topline {
-  position: relative;
-  padding: 0 2px 14px;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .18em;
-}
+.calculator-shell::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.055), transparent 22%, transparent 75%, rgba(255,255,255,.025)); }
+.calculator-topline { position: relative; padding: 0 2px 14px; color: var(--muted); font-size: 9px; font-weight: 600; letter-spacing: .18em; }
 .topline-mark { color: var(--text); font-size: 14px; font-weight: 400; }
 
 .display-container {
   position: relative;
-  min-height: clamp(128px, 30vw, 165px);
+  min-height: clamp(118px, 30vw, 165px);
   margin-bottom: 14px;
-  padding: clamp(18px, 5vw, 26px);
+  padding: clamp(16px, 5vw, 26px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -113,50 +93,17 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; touch-action: 
   background: linear-gradient(180deg, rgba(255,255,255,.025), rgba(0,0,0,.12)), var(--display);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
 }
+.display-container::after { content: ""; position: absolute; width: 120px; height: 120px; right: -70px; top: -70px; border-radius: 50%; border: 1px solid rgba(255,255,255,.07); }
+.display-secondary { position: relative; z-index: 1; min-height: 18px; margin-bottom: 8px; color: var(--muted); text-align: right; font: 400 clamp(.72rem, 3vw, .82rem)/1.2 "DM Mono", monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.display-primary { position: relative; z-index: 1; color: var(--text); text-align: right; font: 500 clamp(2rem, 12vw, 3.7rem)/1 "DM Mono", monospace; letter-spacing: -.065em; word-break: break-all; overflow: hidden; }
 
-.display-container::after {
-  content: "";
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  right: -70px;
-  top: -70px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.07);
-}
-
-.display-secondary {
-  position: relative;
-  z-index: 1;
-  min-height: 18px;
-  margin-bottom: 8px;
-  color: var(--muted);
-  text-align: right;
-  font: 400 clamp(.72rem, 3vw, .82rem)/1.2 "DM Mono", monospace;
-  letter-spacing: .02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.display-primary {
-  position: relative;
-  z-index: 1;
-  color: var(--text);
-  text-align: right;
-  font: 500 clamp(2.25rem, 12vw, 3.7rem)/1 "DM Mono", monospace;
-  letter-spacing: -.065em;
-  word-break: break-all;
-  overflow: hidden;
-}
-
-.button-grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
-
+.button-grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(7px, 2vw, 9px); }
 .btn {
   position: relative;
   width: 100%;
   min-width: 0;
-  height: clamp(55px, 14vw, 68px);
+  min-height: 48px;
+  height: clamp(52px, 14vw, 68px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,72 +112,66 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; touch-action: 
   background: var(--key);
   color: var(--text);
   cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
   font: 500 clamp(.95rem, 4vw, 1.05rem)/1 "DM Mono", monospace;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 5px 16px rgba(0,0,0,.18);
   transition: transform .35s var(--ease), background .25s ease, border-color .25s ease, box-shadow .35s var(--ease);
   overflow: hidden;
 }
-
-.btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.08) 50%, transparent 70%);
-  transform: translateX(-120%);
-  transition: transform .55s var(--ease);
-}
-
-.btn:hover { transform: translateY(-2px); background: var(--key-hover); border-color: var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 10px 24px rgba(0,0,0,.25); }
-.btn:hover::before { transform: translateX(120%); }
+.btn::before { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.08) 50%, transparent 70%); transform: translateX(-120%); transition: transform .55s var(--ease); pointer-events: none; }
 .btn:active { transform: translateY(1px) scale(.965); transition-duration: .08s; }
 .btn:focus-visible { outline: 1px solid #fff; outline-offset: 2px; }
-
 .btn-function { color: #a0a0a0; font-family: Inter, sans-serif; font-weight: 600; }
-.btn-function:hover { color: var(--text); }
 .btn-operator { color: var(--text); background: #202020; border-color: var(--line); }
-.btn-operator:hover { background: #2b2b2b; }
 .btn-equals { color: #0b0b0b; background: #f3f3f0; border-color: #fff; font-size: clamp(1.2rem, 5vw, 1.45rem); box-shadow: 0 10px 28px rgba(255,255,255,.10); }
-.btn-equals:hover { background: #fff; color: #000; box-shadow: 0 14px 34px rgba(255,255,255,.15); }
-.btn-zero { grid-column: span 2; justify-content: flex-start; padding-left: 24px; }
+.btn-zero { grid-column: span 2; justify-content: flex-start; padding-left: clamp(16px, 5vw, 24px); }
 
 .calculator-footer { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--dim); font-size: 8px; letter-spacing: .13em; }
 .calculator-footer span:first-child { color: #9b9b9b; }
 .bottom-caption { margin: 12px 5px 0; color: var(--dim); font-size: 9px; letter-spacing: .05em; }
 .bottom-caption span:last-child { font-family: "DM Mono", monospace; }
 
+/* Touchscreens: don't depend on hover and keep every key comfortably tappable. */
+@media (any-pointer: coarse) {
+  .btn { min-height: 52px; }
+  .btn:hover { transform: none; background: var(--key); border-color: transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 5px 16px rgba(0,0,0,.18); }
+  .btn-operator:hover { background: #202020; border-color: var(--line); }
+  .btn-equals:hover { background: #f3f3f0; color: #0b0b0b; }
+  .btn:hover::before { transform: translateX(-120%); }
+}
+
 @media (max-width: 480px) {
-  .page { align-items: start; padding-top: max(14px, env(safe-area-inset-top)); }
-  .calculator-container { width: min(430px, 100%); }
+  .page { place-items: start center; padding-top: max(12px, env(safe-area-inset-top)); }
+  .calculator-container { width: 100%; }
   .site-header { margin-bottom: 10px; }
-  .calculator-shell { border-radius: 20px; padding: 13px; }
-  .calculator-topline { padding-bottom: 11px; }
-  .display-container { min-height: 118px; border-radius: 15px; padding: 16px; }
+  .calculator-shell { border-radius: 20px; padding: 12px; }
+  .calculator-topline { padding-bottom: 10px; }
+  .display-container { min-height: 112px; border-radius: 15px; padding: 15px; margin-bottom: 11px; }
   .button-grid { gap: 7px; }
   .btn { height: clamp(52px, 15vw, 62px); border-radius: 13px; }
-  .btn-zero { padding-left: 19px; }
-  .calculator-footer { font-size: 7px; }
+  .calculator-footer { margin-top: 10px; padding-top: 10px; }
 }
 
-@media (max-width: 360px) {
-  .calculator-shell { padding: 10px; }
+@media (max-width: 380px) {
+  .page { padding-inline: 9px; }
+  .calculator-shell { padding: 9px; }
   .button-grid { gap: 6px; }
-  .btn { height: 49px; border-radius: 11px; }
-  .display-container { min-height: 105px; padding: 13px; margin-bottom: 10px; }
-  .display-primary { font-size: 2rem; }
-  .calculator-footer { display: none; }
+  .btn { min-height: 50px; height: 50px; border-radius: 11px; }
+  .display-container { min-height: 100px; padding: 12px; margin-bottom: 9px; }
+  .display-primary { font-size: 1.85rem; }
+  .calculator-footer, .bottom-caption { display: none; }
 }
 
-@media (max-height: 520px) and (orientation: landscape) {
-  .page { align-items: start; padding: 8px 16px; }
-  .calculator-container { max-width: 600px; }
+@media (max-height: 560px) and (orientation: landscape) {
+  .page { place-items: start center; padding: max(8px, env(safe-area-inset-top)) 12px max(8px, env(safe-area-inset-bottom)); }
+  .calculator-container { max-width: 620px; }
   .site-header, .bottom-caption { display: none; }
-  .calculator-shell { padding: 10px 14px; }
-  .calculator-topline { padding-bottom: 7px; }
-  .display-container { min-height: 70px; margin-bottom: 7px; padding: 9px 14px; }
-  .display-primary { font-size: 1.8rem; }
-  .btn { height: 43px; }
+  .calculator-shell { padding: 9px 12px; }
+  .calculator-topline { padding-bottom: 6px; }
+  .display-container { min-height: 68px; margin-bottom: 6px; padding: 8px 12px; }
+  .display-secondary { min-height: 13px; margin-bottom: 3px; }
+  .display-primary { font-size: 1.7rem; }
+  .button-grid { gap: 6px; }
+  .btn { min-height: 48px; height: 48px; }
   .calculator-footer { display: none; }
 }
 
