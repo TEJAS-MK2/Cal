@@ -2,24 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#000000">
-  <meta name="description" content="Cal — Aesthetic Calculator">
-  <title>CALCULATOR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0b">
+  <meta name="description" content="Cal — a minimal motion-first calculator.">
+  <title>CAL — Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
   <main class="page">
-    <section class="calculator-container">
-      <header class="calculator-header">
-        <h1 class="calculator-title">CALCULATOR</h1>
+    <section class="calculator-container" aria-label="Calculator">
+      <header class="site-header">
+        <div class="eyebrow"><span class="status-dot"></span> CAL / 001</div>
+        <div class="header-note">MOTION FIRST</div>
       </header>
 
-      <div class="calculator">
-        <div class="display-container" aria-live="polite">
+      <div class="calculator-shell">
+        <div class="calculator-topline">
+          <span>CALCULATOR</span>
+          <span class="topline-mark">+</span>
+        </div>
+
+        <div class="display-container" aria-live="polite" aria-atomic="true">
           <div class="display-secondary" id="expression">0</div>
           <div class="display-primary" id="result">0</div>
         </div>
@@ -49,11 +58,18 @@
           <button class="btn btn-number" data-action="decimal">.</button>
           <button class="btn btn-equals" data-action="equals">=</button>
         </div>
+
+        <footer class="calculator-footer">
+          <span>READY</span>
+          <span>ESC / CLEAR</span>
+          <span>⌫ / DELETE</span>
+        </footer>
       </div>
 
-      <footer class="calculator-footer">
-        <small>Use keyboard for input • ESC to clear</small>
-      </footer>
+      <div class="bottom-caption">
+        <span>Simple tools, carefully shaped.</span>
+        <span>01</span>
+      </div>
     </section>
   </main>
   <script src="script.js"></script>
