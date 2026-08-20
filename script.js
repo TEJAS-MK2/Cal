@@ -1,67 +1,17 @@
 (() => {
   'use strict';
-
-  const settingsStyle = document.createElement('link');
-  settingsStyle.rel = 'stylesheet';
-  settingsStyle.href = 'settings.css';
-  document.head.appendChild(settingsStyle);
-
-  const resultEl = document.querySelector('#result');
-  const expressionEl = document.querySelector('#expression');
-  const keys = document.querySelector('.button-grid');
-  if (!resultEl || !expressionEl || !keys) return;
-
-  let current = '0', stored = null, operator = null, waiting = false, expression = '';
-  const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷' };
-  const defaults = { sound: true, vibration: true, motion: true, compact: false };
-  let saved = {};
-  try { saved = JSON.parse(localStorage.getItem('cal-settings') || '{}') || {}; } catch (_) { saved = {}; }
-  const settings = { ...defaults, ...saved };
-  const $ = id => document.getElementById(id);
-
-  function render() { resultEl.textContent = current; expressionEl.textContent = expression || '0'; }
-  function format(value) { if (!Number.isFinite(value)) return 'Error'; const rounded = Math.abs(value) < 1e-12 ? 0 : Number(value.toPrecision(12)); return String(rounded); }
-  function inputNumber(n) { if (current === 'Error' || waiting) { current = n; waiting = false; } else current = current === '0' ? n : current + n; render(); }
-  function decimal() { if (current === 'Error' || waiting) { current = '0.'; waiting = false; } else if (!current.includes('.')) current += '.'; render(); }
-  function calculate(a,b,op) { if(op==='+')return a+b;if(op==='-')return a-b;if(op==='*')return a*b;if(op==='/')return b===0?NaN:a/b;return b; }
-  function clearAll() { current='0';stored=null;operator=null;waiting=false;expression='';render(); }
-  function clearEntry() { current='0';waiting=false;render(); }
-  function backspace() { if(waiting||current==='Error')return;current=current.length>1?current.slice(0,-1):'0';if(current==='-')current='0';render(); }
-  function chooseOperator(op) { if(current==='Error')return clearAll();const value=Number(current);if(stored!==null&&!waiting){stored=calculate(stored,value,operator);current=format(stored);if(current==='Error'){stored=null;operator=null;waiting=false;expression='Division by zero';render();return;}}else stored=value;operator=op;waiting=true;expression=`${format(stored)} ${symbols[op]}`;render(); }
-  function equals() { if(operator===null||stored===null||waiting)return;const left=stored,right=Number(current),op=operator,value=calculate(left,right,op);expression=`${format(left)} ${symbols[op]} ${format(right)} =`;current=format(value);stored=null;operator=null;waiting=false;render(); }
-  function beep(){if(!settings.sound)return;try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;const ctx=new AudioCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();osc.frequency.value=520;gain.gain.setValueAtTime(.025,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.045);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.045);}catch(_){} }
-  function vibrate(){if(settings.vibration&&navigator.vibrate)navigator.vibrate(8)}
-  function feedback(){beep();vibrate()}
-  function saveSettings(){try{localStorage.setItem('cal-settings',JSON.stringify(settings))}catch(_){}document.documentElement.classList.toggle('no-motion',!settings.motion);document.documentElement.classList.toggle('compact-mode',settings.compact)}
-  function syncSettings(){['sound','vibration','motion','compact'].forEach(k=>{const el=$(k+'Toggle');if(el)el.checked=Boolean(settings[k])});saveSettings()}
-  function openSettings(){const panel=$('settingsPanel');if(!panel)return;panel.classList.add('open');panel.setAttribute('aria-hidden','false');$('settingsTrigger')?.setAttribute('aria-expanded','true')}
-  function closeSettings(){const panel=$('settingsPanel');if(!panel)return;panel.classList.remove('open');panel.setAttribute('aria-hidden','true');$('settingsTrigger')?.setAttribute('aria-expanded','false')}
-
-  function openThankYou(){
-    feedback();
-    const reduce=!settings.motion||window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduce){window.location.href='thank-you.html';return;}
-    document.documentElement.classList.add('page-leaving');
-    setTimeout(()=>{window.location.href='thank-you.html'},420);
-  }
-
-  keys.addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;feedback();if(button.dataset.number!==undefined)inputNumber(button.dataset.number);else{const action=button.dataset.action;if(action==='decimal')decimal();else if(action==='operator')chooseOperator(button.dataset.value);else if(action==='equals')equals();else if(action==='clear')clearAll();else if(action==='clear-entry')clearEntry();else if(action==='backspace')backspace();}});
-  document.addEventListener('keydown',event=>{const key=event.key;if(/^[0-9]$/.test(key)){inputNumber(key);feedback()}else if(key==='.') {decimal();feedback()}else if(['+','-','*','/'].includes(key)){chooseOperator(key);feedback()}else if(key==='Enter'||key==='='){event.preventDefault();equals();feedback()}else if(key==='Escape'){if($('settingsPanel')?.classList.contains('open'))closeSettings();else clearAll()}else if(key==='Backspace'){backspace();feedback()}});
-  $('settingsTrigger')?.addEventListener('click',openSettings);
-  $('closeSettings')?.addEventListener('click',closeSettings);
-  $('settingsBackdrop')?.addEventListener('click',closeSettings);
-  ['sound','vibration','motion','compact'].forEach(k=>$(k+'Toggle')?.addEventListener('change',event=>{settings[k]=event.target.checked;saveSettings()}));
-  $('resetSettings')?.addEventListener('click',()=>{Object.assign(settings,defaults);syncSettings()});
-
-  const settingsList=$('.settings-list');
-  if(settingsList&&!$('thankYouSetting')){
-    const row=document.createElement('button');
-    row.id='thankYouSetting';row.type='button';row.className='setting-row setting-link';
-    row.innerHTML='<span><strong>About / Thank You</strong><small>Open the CAL thank-you page</small></span><span aria-hidden="true">→</span>';
-    row.addEventListener('click',openThankYou);
-    settingsList.appendChild(row);
-  }
-
-  syncSettings();
-  render();
+  const settingsStyle=document.createElement('link');settingsStyle.rel='stylesheet';settingsStyle.href='settings.css';document.head.appendChild(settingsStyle);
+  const resultEl=document.querySelector('#result'),expressionEl=document.querySelector('#expression'),keys=document.querySelector('.button-grid');if(!resultEl||!expressionEl||!keys)return;
+  let current='0',stored=null,operator=null,waiting=false,expression='';
+  const symbols={'+':'+','-':'−','*':'×','/':'÷'},defaults={sound:true,vibration:true,motion:true,compact:false};let saved={};try{saved=JSON.parse(localStorage.getItem('cal-settings')||'{}')||{}}catch(_){}const settings={...defaults,...saved};const $=id=>document.getElementById(id);
+  function render(){resultEl.textContent=current;expressionEl.textContent=expression||'0'}function format(v){if(!Number.isFinite(v))return'Error';const r=Math.abs(v)<1e-12?0:Number(v.toPrecision(12));return String(r)}function inputNumber(n){if(current==='Error'||waiting){current=n;waiting=false}else current=current==='0'?n:current+n;render()}function decimal(){if(current==='Error'||waiting){current='0.';waiting=false}else if(!current.includes('.'))current+='.';render()}function calculate(a,b,op){if(op==='+')return a+b;if(op==='-')return a-b;if(op==='*')return a*b;if(op==='/')return b===0?NaN:a/b;return b}function clearAll(){current='0';stored=null;operator=null;waiting=false;expression='';render()}function clearEntry(){current='0';waiting=false;render()}function backspace(){if(waiting||current==='Error')return;current=current.length>1?current.slice(0,-1):'0';render()}
+  function chooseOperator(op){if(current==='Error')return clearAll();const value=Number(current);if(stored!==null&&!waiting){stored=calculate(stored,value,operator);current=format(stored);if(current==='Error'){stored=null;operator=null;waiting=false;expression='Division by zero';render();return}}else stored=value;operator=op;waiting=true;expression=`${format(stored)} ${symbols[op]}`;render()}function equals(){if(operator===null||stored===null||waiting)return;const left=stored,right=Number(current),op=operator;current=format(calculate(left,right,op));expression=`${format(left)} ${symbols[op]} ${format(right)} =`;stored=null;operator=null;waiting=false;render()}
+  function beep(){if(!settings.sound)return;try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const c=new A(),o=c.createOscillator(),g=c.createGain();o.frequency.value=520;g.gain.setValueAtTime(.025,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.045);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.045)}catch(_){}}function vibrate(){if(settings.vibration&&navigator.vibrate)navigator.vibrate(8)}function feedback(){beep();vibrate()}
+  function saveSettings(){try{localStorage.setItem('cal-settings',JSON.stringify(settings))}catch(_){}document.documentElement.classList.toggle('no-motion',!settings.motion);document.documentElement.classList.toggle('compact-mode',settings.compact)}function syncSettings(){['sound','vibration','motion','compact'].forEach(k=>{const e=$(k+'Toggle');if(e)e.checked=Boolean(settings[k])});saveSettings()}function openSettings(){const p=$('settingsPanel');if(!p)return;p.classList.add('open');p.setAttribute('aria-hidden','false');$('settingsTrigger')?.setAttribute('aria-expanded','true')}function closeSettings(){const p=$('settingsPanel');if(!p)return;p.classList.remove('open');p.setAttribute('aria-hidden','true');$('settingsTrigger')?.setAttribute('aria-expanded','false')}
+  function openThankYou(){feedback();const reduce=!settings.motion||window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduce){location.href='thank-you.html';return}document.documentElement.classList.add('page-leaving');setTimeout(()=>location.href='thank-you.html',420)}
+  keys.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;feedback();if(b.dataset.number!==undefined)inputNumber(b.dataset.number);else{const a=b.dataset.action;if(a==='decimal')decimal();else if(a==='operator')chooseOperator(b.dataset.value);else if(a==='equals')equals();else if(a==='clear')clearAll();else if(a==='clear-entry')clearEntry();else if(a==='backspace')backspace()}});
+  document.addEventListener('keydown',e=>{const k=e.key;if(/^[0-9]$/.test(k)){inputNumber(k);feedback()}else if(k==='.') {decimal();feedback()}else if(['+','-','*','/'].includes(k)){chooseOperator(k);feedback()}else if(k==='Enter'||k==='='){e.preventDefault();equals();feedback()}else if(k==='Escape'){if($('settingsPanel')?.classList.contains('open'))closeSettings();else clearAll()}else if(k==='Backspace'){backspace();feedback()}});
+  $('settingsTrigger')?.addEventListener('click',openSettings);$('closeSettings')?.addEventListener('click',closeSettings);$('settingsBackdrop')?.addEventListener('click',closeSettings);['sound','vibration','motion','compact'].forEach(k=>$(k+'Toggle')?.addEventListener('change',e=>{settings[k]=e.target.checked;saveSettings()}));$('resetSettings')?.addEventListener('click',()=>{Object.assign(settings,defaults);syncSettings()});
+  $('thankYouSetting')?.addEventListener('click',openThankYou);
+  syncSettings();render();
 })();
