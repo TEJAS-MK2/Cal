@@ -10,47 +10,48 @@
   --shadow: 0 20px 40px rgba(255,255,255,.1);
   --radius: 20px;
   --small-radius: 12px;
-  --transition: all .3s cubic-bezier(.4,0,.2,1);
+  --transition: all .25s cubic-bezier(.4,0,.2,1);
 }
 
 * { box-sizing: border-box; }
-html, body { min-height: 100%; }
+html { min-height: 100%; }
 body {
   margin: 0;
+  min-height: 100dvh;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--white);
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
 .page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 .calculator-container {
-  max-width: 400px;
-  width: 100%;
-  padding: 2rem;
+  width: min(400px, 100%);
+  padding: 20px;
 }
 
-.calculator-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
+.calculator-header { text-align: center; margin-bottom: 20px; }
 .calculator-title {
   margin: 0;
   color: var(--white);
-  font-size: 2rem;
+  font-size: clamp(1.35rem, 7vw, 2rem);
   font-weight: 600;
   letter-spacing: .01em;
 }
 
 .calculator {
-  padding: 2rem;
+  width: 100%;
+  padding: clamp(14px, 5vw, 32px);
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -58,9 +59,9 @@ body {
 }
 
 .display-container {
-  min-height: 80px;
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
+  min-height: clamp(90px, 25vw, 120px);
+  margin-bottom: clamp(14px, 4vw, 24px);
+  padding: clamp(14px, 4vw, 24px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -72,11 +73,10 @@ body {
 
 .display-secondary {
   min-height: 1rem;
-  margin-bottom: .25rem;
+  margin-bottom: 4px;
   color: var(--gray);
   text-align: right;
-  font-size: .875rem;
-  font-weight: 400;
+  font-size: clamp(.72rem, 3.2vw, .875rem);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -85,21 +85,24 @@ body {
 .display-primary {
   color: var(--white);
   text-align: right;
-  font-size: 2rem;
+  font-size: clamp(1.65rem, 9vw, 2rem);
   font-weight: 600;
+  line-height: 1.15;
   word-break: break-all;
   overflow: hidden;
 }
 
 .button-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: .75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(7px, 2.5vw, 12px);
 }
 
 .btn {
   position: relative;
-  height: 60px;
+  width: 100%;
+  min-width: 0;
+  height: clamp(52px, 14vw, 60px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,8 +113,10 @@ body {
   color: var(--white);
   box-shadow: 0 4px 12px rgba(255,255,255,.05);
   cursor: pointer;
-  font: 500 1.125rem Inter, sans-serif;
+  font: 500 clamp(.95rem, 4.5vw, 1.125rem) Inter, sans-serif;
   transition: var(--transition);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn::before {
@@ -122,22 +127,15 @@ body {
   width: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
   transition: var(--transition);
+  pointer-events: none;
 }
 
 .btn:hover::before { left: 100%; }
 .btn:active { transform: scale(.95); }
 .btn:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
 
-.btn-number {
-  border: 1px solid var(--border);
-  background: var(--button);
-}
-
-.btn-number:hover {
-  background: var(--button-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255,255,255,.1);
-}
+.btn-number { border: 1px solid var(--border); background: var(--button); }
+.btn-number:hover { background: var(--button-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,.1); }
 
 .btn-function,
 .btn-operator {
@@ -148,54 +146,45 @@ body {
 }
 
 .btn-function:hover,
-.btn-operator:hover {
-  background: #e6e6e6;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,.15);
-}
+.btn-operator:hover { background: #e6e6e6; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
 
-.btn-equals {
-  background: #000;
-  color: var(--white);
-  border: 1px solid #444;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
+.btn-equals { background: #000; color: var(--white); border: 1px solid #444; font-size: clamp(1.2rem, 6vw, 1.5rem); font-weight: 600; }
+.btn-equals:hover { background: #222; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,.2); }
+.btn-zero { grid-column: span 2; }
 
-.btn-equals:hover {
-  background: #222;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255,255,255,.2);
-}
+.calculator-footer { margin-top: 16px; color: var(--white); text-align: center; }
+.calculator-footer small { color: var(--white); font-size: clamp(.62rem, 2.8vw, .75rem); }
 
-.btn-zero {
-  grid-column: span 2;
-}
-
-.calculator-footer {
-  margin-top: 1.5rem;
-  color: var(--white);
-  text-align: center;
-}
-
-.calculator-footer small {
-  color: var(--white);
-  font-size: .75rem;
-}
-
+/* Phones */
 @media (max-width: 480px) {
-  .calculator-container { padding: 1rem; }
-  .calculator { padding: 1.5rem; }
-  .calculator-title { font-size: 1.5rem; }
-  .display-primary { font-size: 1.75rem; }
-  .btn { height: 55px; font-size: 1rem; }
-  .btn-equals { font-size: 1.25rem; }
+  .page { align-items: flex-start; padding-top: max(12px, env(safe-area-inset-top)); }
+  .calculator-container { padding: 8px; }
+  .calculator-header { margin-bottom: 14px; }
+  .calculator { padding: 14px; border-radius: 18px; }
+  .display-container { border-radius: 10px; }
+  .btn { border-radius: 10px; }
+  .calculator-footer { margin-top: 12px; }
 }
 
+/* Very small phones */
 @media (max-width: 360px) {
-  .button-grid { gap: .5rem; }
-  .btn { height: 50px; font-size: .875rem; }
-  .display-primary { font-size: 1.5rem; }
+  .calculator-container { padding: 4px; }
+  .calculator { padding: 10px; }
+  .button-grid { gap: 6px; }
+  .btn { height: 48px; border-radius: 9px; }
+  .display-container { min-height: 82px; padding: 12px; margin-bottom: 12px; }
+}
+
+/* Landscape phones: keep everything visible without huge vertical scrolling */
+@media (max-height: 520px) and (orientation: landscape) {
+  .page { align-items: flex-start; }
+  .calculator-container { max-width: 560px; padding: 8px 16px; }
+  .calculator-header { margin-bottom: 8px; }
+  .calculator-title { font-size: 1.2rem; }
+  .calculator { padding: 10px 14px; }
+  .display-container { min-height: 64px; margin-bottom: 10px; padding: 10px 14px; }
+  .btn { height: 48px; }
+  .calculator-footer { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
